@@ -39,6 +39,7 @@ def txn_fraud(df):
         StructField('merchant', StringType(), False),
         StructField('merch_lat', StringType(), False),
         StructField('merch_long', StringType(), False),
+        StructField('timestamp', StringType(), False),
         ])
 
     return (
@@ -46,12 +47,13 @@ def txn_fraud(df):
       .select(from_json('jsonData', payload_schema).alias('payload'))
       .select(
         col('payload.user_id').alias('user_id'),
-        col('payload.transaction_id').alias('transaction_id'),
+        col('payload.transaction_id').alias('txn_id'),
         col('payload.category').alias('category'),
         col('payload.amt').cast('double').alias('amt'),
         col('payload.is_fraud').cast('long').alias('is_fraud'),
         col('payload.merchant').alias('merchant'),
         col('payload.merch_lat').cast('double').alias('merch_lat'),
         col('payload.merch_long').cast('double').alias('merch_long'),
+        from_utc_timestamp('payload.timestamp', 'UTC').alias('timestamp')
         )
     )

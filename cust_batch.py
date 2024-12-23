@@ -26,8 +26,9 @@ def users_fraud(df):
 
     payload_schema = StructType([
         StructField('user_id', StringType(), False),
-        StructField('transaction_id', StringType(), False),
         StructField('city_pop', StringType(), False),
+        StructField('signup_timestamp', StringType(), False),
+
         ])
 
     return (
@@ -35,7 +36,7 @@ def users_fraud(df):
       .select(from_json('jsonData', payload_schema).alias('payload'))
       .select(
         col('payload.user_id').alias('user_id'),
-        col('payload.transaction_id').alias('transaction_id'),
         col('payload.city_pop').alias('category'),
+        from_utc_timestamp('payload.signup_timestamp', 'UTC').alias('signup_timestamp')
         )
     )
